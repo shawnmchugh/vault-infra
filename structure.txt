@@ -1,0 +1,68 @@
+Packer + Ansible       →  Prebaked Vault AMI with agents and config template
+Terraform              →  Launch EC2 or ASG using image + inject cloud-init
+Cloud-init (user data) →  Bootstrap Vault config variables and service at runtime
+Vault HA backend       →  Raft + KMS for storage + auto-unseal
+
+vault-infra/
+├── packer/
+│   ├── aws-vault.pkr.hcl
+│   └── azure-vault.pkr.hcl
+│
+├── terraform/
+│   ├── aws/
+│   │   ├── main.tf
+│   │   └── modules/
+│   ├── azure/
+│   │   └── main.tf
+│   └── common-vars.tf
+│
+├── ansible/
+│   ├── inventories/
+│   │   ├── aws/
+│   │   ├── azure/
+│   │   └── onprem/
+│   ├── roles/
+│   │   └── vault/
+│   └── site.yml
+│
+└── vault-config/
+    └── terraform/  # optional: Terraform Vault provider config (policies, auth, secrets)
+
+vault-packer/
+├── packer.pkr.hcl
+├── ansible/
+│   ├── roles/
+│   │   ├── vault_base/
+│   │   ├── telegraf/
+│   │   ├── fluentd/
+│   │   ├── sentinelone/
+│   │   └── root_ca/
+│   └── playbooks/
+│       └── packer.yml
+├── files/
+│   ├── vault.hcl.template
+│   ├── vault.license
+│   ├── tls/
+│   │   ├── vault.crt
+│   │   ├── vault.key
+│   │   └── ca.crt
+│   ├── root-ca.pem
+│   ├── telegraf.conf
+│   ├── fluent.conf
+│   └── sentinel1/
+│       ├── installer.sh
+│       └── token.txt
+
+
+roles/
+└── vault_base/
+    ├── tasks/
+    │   └── main.yml
+    ├── templates/
+    │   └── vault.hcl.j2
+    ├── files/
+    │   ├── aws/
+    │   │   └── render-vault-config.sh
+    │   └── azure/
+    │       └── render-vault-config.sh
+

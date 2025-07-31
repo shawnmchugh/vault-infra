@@ -1,0 +1,80 @@
+- name: Ensure required archive tools are present
+  become: true
+  package:
+    name:
+      - unzip
+      - tar
+      - bzip2
+      - xz
+      - zstd
+    state: present
+
+- name: Install gettext for envsubst
+  package:
+    name: gettext
+    state: present
+
+- name: Download Vault binary
+  get_url:
+    url: "{{ vault_download_url }}"
+    dest: "/tmp/vault_{{ vault_version }}.zip"
+    mode: '0644'
+  register: vault_download
+  retries: 3
+  delay: 10
+  until: vault_download is succeeded
+
+- name: Unzip Vault binary to /usr/local/bin
+  ansible.builtin.unarchive:
+    src: "/tmp/vault_{{ vault_version }}.zip"
+    dest: "/usr/local/bin/"
+    remote_src: yes
+    mode: '0755'
+
+- name: Ensure vault user exists
+  user:
+    name: vault
+    system: yes
+    shell: /sbin/nologin
+    create_home: no
+
+- name: Ensure Vault TLS directory exists
+  file:
+    path: /etc/vault.d/tls
+    state: directory
+    owner: vault
+    group: vault
+    mode: '0755'
+  become: true
+
+- name: Install Vault TLS files
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/vault.d/tls/{{ item | basename }}"
+    owner: vault
+    group: vault
+    mode: '0600'
+  with_fileglob:
+    - "tls/*"
+
+- name: Render vault.hcl from template
+  template:
+    src: vault.hcl.j2
+    dest: /etc/vault.d/vault.hcl
+    owner: vault
+    group: vault
+    mode: '0644'
+
+- name: Copy Vault license
+  copy:
+    src: "vault.license"
+    dest: "/etc/vault.d/vault.license"
+    mode: '0600'
+
+- name: Copy render-vault-config.sh for platform
+  copy:
+    src: "render-vault-config-{{ platform }}.sh"
+    dest: /usr/local/bin/render-vault-config.sh
+    mode: '0755'
+  when: platform in ['aws', 'azure']
+

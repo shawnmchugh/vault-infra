@@ -1,0 +1,89 @@
+# =========================
+# Terraform Best Practices
+# =========================
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+*.tfvars.json
+*.tfplan
+terraform.tfstate.backup
+.terraform.lock.hcl
+.terraform.tfstate.lock.info
+
+# =========================
+# Packer Best Practices
+# =========================
+*.pkr.hcl.lock.json
+packer_cache/
+*.pkrvars.hcl
+
+# =========================
+# Ansible Best Practices
+# =========================
+# Ignore retry files
+*.retry
+
+# Ignore inventories or variable files that are local/sensitive
+inventories/*
+!inventories/README.md
+host_vars/
+group_vars/
+*.vault
+*.vault.yml
+
+# =========================
+# UNIX/Linux and Editor Files
+# =========================
+# Generic temp files / editor swap or backup files
+*~
+*.swp
+*.swo
+*.bak
+*.tmp
+*.orig
+# Vim/Emacs/VSCode/Jetbrains
+.vscode/
+.idea/
+*.code-workspace
+
+# macOS and OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# System-specific metadata files
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# SSH, GPG, and private key files (never commit keys!)
+*.pem
+*.key
+*.crt
+*.pub
+*.pfx
+
+# =========================
+# Logs and Miscellaneous
+# =========================
+*.log
+logs/
+log/
+# Coverage/test artifacts
+.coverage
+coverage/
+# Python/venv cache (if used)
+__pycache__/
+*.pyc
+.venv/
+venv/
+# Node artifacts (common in automation toolchains)
+node_modules/
+
+# Uncomment below if you want to ignore all hidden files except whitelisted ones
+#.*
+#!.gitignore
+#!.gitattributes
+

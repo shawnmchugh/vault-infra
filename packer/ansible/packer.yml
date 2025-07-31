@@ -1,0 +1,7 @@
+- name: Configure Vault for {{ platform }}
+  hosts: all
+  become: true
+  vars:
+    platform: "{{ platform | default('aws') }}"
+  roles:
+    - vault_base
